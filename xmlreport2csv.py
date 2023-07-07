@@ -85,25 +85,28 @@ def parse_bindingsite(bindingsite):
 def parse_report(xml):
     tree = ET.parse(xml)
     root = tree.getroot()
+    ligands = []
     for i in root:
-        if i.tag == 'bindingsite' and i.attrib['id'] == "1":      
+        if i.tag == 'bindingsite':      
+          name = i.find("identifiers/members/member").text
           ligproperties, bsresidues, interactions  = parse_bindingsite(i)
+          ligands.append((name, {**ligproperties, **bsresidues, **interactions}))
 
-    return {**ligproperties, **bsresidues, **interactions}
+    return ligands
 
 def main():
-    infile = sys.argv[1] # report file
-    outfile = sys.argv[2] # out.csv
+    report_file = sys.argv[1] # reports list
+    outfile = sys.argv[2] # output file
 
-    rename = lambda name: name.split('.')[0].replace('out','')
-
-    reports = {}
-    for report in open(infile):
-        report = report.strip()
-        name = rename(report)
-        reports[name] = parse_report(report)
-    df = pd.DataFrame.from_dict(reports)
+    report = {}
+    ligands = parse_report(report_file)
+    ligands.sort(key = lambda x: x[0].split(":")[1:])
+    for name,ligand in ligands:
+        report[name] = ligand
+            
+    df = pd.DataFrame.from_dict(report)
     df = df.transpose()
+    df = df.rename_axis('Ligand')
     df.to_csv(outfile)
 
 main()
