@@ -92,7 +92,7 @@ def parse_report(xml):
     return {**ligproperties, **bsresidues, **interactions}
 
 def main():
-    infile = sys.argv[1] # reports list
+    infile = sys.argv[1] # report file
     outfile = sys.argv[2] # out.csv
 
     rename = lambda name: name.split('.')[0].replace('out','')
