@@ -95,7 +95,7 @@ def parse_report(xml):
     return ligands
 
 def main():
-    report_file = sys.argv[1] # reports list
+    report_file = sys.argv[1] # reports file
     outfile = sys.argv[2] # output file
 
     report = {}
